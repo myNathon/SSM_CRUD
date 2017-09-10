@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--Spring Controller-->
+    <context:component-scan base-package="com.none">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+    <!--Data Source-->
+    <context:property-placeholder location="classpath:dbconfig.properties" />
+    <bean id="pooledDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="jdbcUrl" value="${jdbc.jdbcUrl}" />
+        <property name="driverClass" value="${jdbc.driverClass}" />
+        <property name="user" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.password}" />
+    </bean>
+
+    <!--Spring with MyBatis-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--Mybatis config path-->
+        <property name="configLocation" value="classpath:mybatis-config.xml" />
+        <!--Data Source-->
+        <property name="dataSource" ref="pooledDataSource" />
+        <!--Mybatis Mapper config path-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+    </bean>
+
+    <!--Mapper Configurer-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.none.crud.dao" />
+    </bean>
+
+    <!--Transaction Control-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--Data Source-->
+        <property name="dataSource" ref="pooledDataSource" />
+    </bean>
+
+    <!--AOP-->
+    <aop:config>
+        <!--service point cut-->
+        <aop:pointcut id="txPoint" expression="execution(* com.none.crud.service..*(..))" />
+        <!--service advisor-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>
+    </aop:config>
+
+    <!--service advisor and point cut-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--All point cut-->
+            <tx:method name="*"/>
+            <!--method start with get-->
+            <tx:method name="get*" read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+</beans>
