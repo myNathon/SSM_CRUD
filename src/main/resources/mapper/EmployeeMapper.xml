@@ -8,6 +8,21 @@
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="d_id" jdbcType="INTEGER" property="dId" />
   </resultMap>
+
+  <!--self result map-->
+  <resultMap id="WithDeptResultMap" type="com.none.crud.bean.Employee">
+    <id column="emp_id" jdbcType="INTEGER" property="empId" />
+    <result column="emp_name" jdbcType="VARCHAR" property="empName" />
+    <result column="gender" jdbcType="CHAR" property="gender" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="d_id" jdbcType="INTEGER" property="dId" />
+    <association property="department" javaType="com.none.crud.bean.Department">
+      <id column="dept_id" property="deptId" />
+      <result column="dept_name" property="deptName" />
+    </association>
+  </resultMap>
+  <!--end result map-->
+
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -69,6 +84,37 @@
   <sql id="Base_Column_List">
     emp_id, emp_name, gender, email, d_id
   </sql>
+
+  <!--self declaration-->
+  <sql id="WithDept_Column_List">
+    e.emp_id, e.emp_name, e.gender, e.email, e.d_id, d.dept_id, d.dept_name
+  </sql>
+  <!-- add method
+  List<Employee> selectByExampleWithDept(EmployeeExample example);
+  Employee selectByPrimaryKeyWithDept(Integer empId);
+  -->
+  <select id="selectByExampleWithDept" parameterType="com.none.crud.bean.EmployeeExample" resultMap="WithDeptResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="WithDept_Column_List" />
+    from _emp e join _dept d on e.d_id = d.dept_id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKeyWithDept" parameterType="java.lang.Integer" resultMap="WithDeptResultMap">
+    select
+    <include refid="WithDept_Column_List" />
+    from _emp e join _dept d on e.d_id = d.dept_id
+    where e.emp_id = #{empId,jdbcType=INTEGER}
+  </select>
+  <!--end declaration-->
+
   <select id="selectByExample" parameterType="com.none.crud.bean.EmployeeExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
