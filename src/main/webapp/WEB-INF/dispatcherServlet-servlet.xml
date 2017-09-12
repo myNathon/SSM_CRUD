@@ -7,7 +7,7 @@
 
     <!--Spring MVC Controller-->
     <context:component-scan base-package="com.none" use-default-filters="false">
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 
     <!--View Resolver-->
