@@ -33,6 +33,14 @@
       <version>4.3.10.RELEASE</version>
     </dependency>
 
+    <!--jackson databind-->
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+
     <!--Spring JDBC-->
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
     <dependency>
