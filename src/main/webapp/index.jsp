@@ -72,40 +72,9 @@
     <%--pagination--%>
     <div class="row">
         <%--page information--%>
-        <div class="col-md-6">
-            当前 0 页, 总 0 页, 共 0 条记录
-        </div>
+        <div class="col-md-6" id="page_info_area"></div>
         <%--page bar--%>
-        <div class="col-md-6">
-            <%--<nav aria-label="Page navigation">--%>
-                <%--<ul class="pagination">--%>
-                    <%--<li><a href="<%=basePath%>/emps?pn=1">首页</a></li>--%>
-                    <%--<c:if test="${pageInfo.hasPreviousPage}">--%>
-                        <%--<li>--%>
-                            <%--<a href="<%=basePath%>/emps?pn=${pageInfo.pageNum-1}" aria-label="Previous">--%>
-                                <%--<span aria-hidden="true">&laquo;</span>--%>
-                            <%--</a>--%>
-                        <%--</li>--%>
-                    <%--</c:if>--%>
-                    <%--<c:forEach items="${pageInfo.navigatepageNums}" var="pn">--%>
-                        <%--<c:if test="${pn == pageInfo.pageNum}">--%>
-                            <%--<li class="active"><a href="#">${pn}</a></li>--%>
-                        <%--</c:if>--%>
-                        <%--<c:if test="${pn != pageInfo.pageNum}">--%>
-                            <%--<li><a href="<%=basePath%>/emps?pn=${pn}">${pn}</a></li>--%>
-                        <%--</c:if>--%>
-                    <%--</c:forEach>--%>
-                    <%--<c:if test="${pageInfo.hasNextPage}">--%>
-                        <%--<li>--%>
-                            <%--<a href="<%=basePath%>/emps?pn=${pageInfo.pageNum+1}" aria-label="Next">--%>
-                                <%--<span aria-hidden="true">&raquo;</span>--%>
-                            <%--</a>--%>
-                        <%--</li>--%>
-                    <%--</c:if>--%>
-                    <%--<li><a href="<%=basePath%>/emps?pn=${pageInfo.pages}">末页</a></li>--%>
-                <%--</ul>--%>
-            <%--</nav>--%>
-        </div>
+        <div class="col-md-6" id="page_nav_area"></div>
     </div>
 </div>
 
@@ -117,47 +86,120 @@
 <script>
     // 页面请求完，直接发送 ajax 请求
     $(function () {
-       $.ajax({
-           url: "<%=basePath%>/emps",
-           data: "pn=1",
-           type: "GET",
-           success: function (result) {
-               // 1、解释数据并显示数据
-               build_emps_table(result);
-               // 2、解释显示分页的信息
-           }
-       });
-       
-       function build_emps_table(result) {
-           var emps = result.extend.pageInfo.list;
-           $.each(emps, function (index, item) {
-               var empIdTd = $("<td></td>").append(item.empId);
-               var empNameTd = $("<td></td>").append(item.empName);
-               var genderTd = $("<td></td>").append(item.gender === "M" ? "男" : "女");
-               var emailTd = $("<td></td>").append(item.email);
-               var deptNameTd = $("<td></td>").append(item.department.deptName);
-               var editBtn = $("<a></a>").addClass("btn btn-primary btn-sm")
-                   .append($("<span></span>").addClass("glyphicon glyphicon-pencil"))
-                   .append("编辑");
-               var delBtn = $("<a></a>").addClass("btn btn-danger btn-sm")
-                   .append($("<span></span>").addClass("glyphicon glyphicon-trash"))
-                   .append("删除");
-               var btnTd = $("<td></td>").append(editBtn).append(" ").append(delBtn);
-
-               $("<tr></tr>").append(empIdTd)
-                   .append(empNameTd)
-                   .append(genderTd)
-                   .append(emailTd)
-                   .append(deptNameTd)
-                   .append(btnTd)
-                   .appendTo("#emps_table tbody");
-           })
-       }
-
-       function build_page_nav(result) {
-
-       }
+        // 首页
+        to_page(1);
     });
+
+    function to_page(pn) {
+        $.ajax({
+            url: "<%=basePath%>/emps",
+            data: "pn=" + pn,
+            type: "GET",
+            success: function (result) {
+                // 1、解释数据并显示数据
+                build_emps_table(result);
+                // 2、解释显示分页的信息
+                build_page_info(result);
+                // 3、解释显示分页条
+                build_page_nav(result);
+            }
+        });
+    }
+
+    function build_emps_table(result) {
+        // clean table body
+        $("#emps_table tbody").empty();
+
+        var emps = result.extend.pageInfo.list;
+        $.each(emps, function (index, item) {
+            var empIdTd = $("<td></td>").append(item.empId);
+            var empNameTd = $("<td></td>").append(item.empName);
+            var genderTd = $("<td></td>").append(item.gender === "M" ? "男" : "女");
+            var emailTd = $("<td></td>").append(item.email);
+            var deptNameTd = $("<td></td>").append(item.department.deptName);
+            var editBtn = $("<a></a>").addClass("btn btn-primary btn-sm")
+                .append($("<span></span>").addClass("glyphicon glyphicon-pencil"))
+                .append("编辑");
+            var delBtn = $("<a></a>").addClass("btn btn-danger btn-sm")
+                .append($("<span></span>").addClass("glyphicon glyphicon-trash"))
+                .append("删除");
+            var btnTd = $("<td></td>").append(editBtn).append(" ").append(delBtn);
+
+            $("<tr></tr>").append(empIdTd)
+                .append(empNameTd)
+                .append(genderTd)
+                .append(emailTd)
+                .append(deptNameTd)
+                .append(btnTd)
+                .appendTo("#emps_table tbody");
+        })
+    }
+
+    function build_page_info(result) {
+        // clean page info area
+        $("#page_info_area").empty();
+
+        // 当前 0 页, 总 0 页, 共 0 条记录
+        var pInfo = "当前 " + result.extend.pageInfo.pageNum + " 页, 总 " +
+            result.extend.pageInfo.pages + " 页, 共 " +
+            result.extend.pageInfo.total + " 条记录";
+        $('#page_info_area').append(pInfo);
+    }
+
+    function build_page_nav(result) {
+        // clean page nav area
+        $("#page_nav_area").empty();
+
+        var ul = $("<ul></ul>").addClass("pagination");
+        var firstPageLi = $("<li></li>").append($("<a></a>").append('首页'));
+        var prePageLi = $("<li></li>").append($("<a></a>").append($('<span></span>').append('&laquo;')));
+        if(false === result.extend.pageInfo.hasPreviousPage) {
+            firstPageLi.addClass("disabled");
+            prePageLi.addClass("disabled");
+        } else {
+            // click event
+            firstPageLi.click(function () {
+                to_page(1);
+            });
+            prePageLi.click(function () {
+                to_page(result.extend.pageInfo.pageNum - 1);
+            });
+        }
+
+        var nextPageLi = $("<li></li>").append($("<a></a>").append($('<span></span>').append('&raquo;')));
+        var lastPageLi = $("<li></li>").append($("<a></a>").append('末页'));
+        if(false === result.extend.pageInfo.hasNextPage) {
+            nextPageLi.addClass("disabled");
+            lastPageLi.addClass("disabled");
+        } else {
+            // click event
+            nextPageLi.click(function () {
+                to_page(result.extend.pageInfo.pageNum + 1);
+            });
+            lastPageLi.click(function () {
+                to_page(result.extend.pageInfo.pages);
+            });
+        }
+
+        ul.append(firstPageLi).append(prePageLi);
+        $.each(result.extend.pageInfo.navigatepageNums, function (index, item) {
+            var numLi = $("<li></li>").append($("<a></a>").append(item));
+            if(item === result.extend.pageInfo.pageNum) {
+                numLi.addClass("active");
+            } else {
+                // click event
+                numLi.click(function () {
+                    to_page(item);
+                });
+            }
+
+            ul.append(numLi);
+        });
+        ul.append(nextPageLi).append(lastPageLi);
+
+        var navEle = $("<nav></nav>").append(ul);
+        navEle.appendTo("#page_nav_area");
+    }
 </script>
 </body>
 </html>

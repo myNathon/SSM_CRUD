@@ -11,6 +11,8 @@
     </typeAliases>
     <plugins>
         <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!--调整分页合理化配置-->
+            <property name="reasonable" value="true" />
         </plugin>
     </plugins>
 </configuration>
