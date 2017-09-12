@@ -14,6 +14,22 @@ public class Employee {
     // 所对应的部门信息
     private Department department;
 
+    public Employee() {
+    }
+
+    public Employee(String empName, String gender, String email, Integer dId) {
+        this(null, empName, gender, email, dId);
+    }
+
+    public Employee(Integer empId, String empName, String gender, String email, Integer dId) {
+        this();
+        this.empId = empId;
+        this.empName = empName;
+        this.gender = gender;
+        this.email = email;
+        this.dId = dId;
+    }
+
     public Department getDepartment() {
         return department;
     }
