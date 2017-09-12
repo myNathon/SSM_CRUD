@@ -99,7 +99,7 @@
       distinct
     </if>
     <include refid="WithDept_Column_List" />
-    from _emp e join _dept d on e.d_id = d.dept_id
+    from _emp e left join _dept d on e.d_id = d.dept_id
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -110,7 +110,7 @@
   <select id="selectByPrimaryKeyWithDept" parameterType="java.lang.Integer" resultMap="WithDeptResultMap">
     select
     <include refid="WithDept_Column_List" />
-    from _emp e join _dept d on e.d_id = d.dept_id
+    from _emp e left join _dept d on e.d_id = d.dept_id
     where e.emp_id = #{empId,jdbcType=INTEGER}
   </select>
   <!--end declaration-->
