@@ -10,6 +10,13 @@
 
   <!--引入项目依赖的 jar 包-->
   <dependencies>
+    <!--Page Helper-->
+    <dependency>
+      <groupId>com.github.pagehelper</groupId>
+      <artifactId>pagehelper</artifactId>
+      <version>5.1.0</version>
+    </dependency>
+
     <!--MBG-->
     <!-- https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core -->
     <dependency>
@@ -92,11 +99,11 @@
     </dependency>
 
     <!--servlet-api-->
-    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+    <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>
 
