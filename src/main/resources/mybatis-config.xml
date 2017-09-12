@@ -9,4 +9,8 @@
     <typeAliases>
         <package name="com.none.crud.bean" />
     </typeAliases>
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+        </plugin>
+    </plugins>
 </configuration>
